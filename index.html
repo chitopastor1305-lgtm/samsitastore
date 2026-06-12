@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON PC NEXT GEN - IA Integrada</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    background: radial-gradient(circle at top, #0f0f1a, #000);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- BARRA LATERAL --- */
+.sidebar {
+    width: 100%;
+    background: #0c0c14;
+    box-sizing: border-box;
+    padding: 15px;
+    border-bottom: 2px solid #7c4dff;
+    z-index: 10;
+}
+
+.sidebar h2 {
+    color: #7c4dff;
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 10px rgba(124, 77, 255, 0.4);
+    font-size: 22px;
+}
+
+.sidebar .menu-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.sidebar button {
+    flex: 1 1 45%;
+    padding: 10px 5px;
+    background: #151525;
+    border: 1px solid #7c4dff;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.sidebar button.active, .sidebar button:hover {
+    background: #7c4dff;
+    box-shadow: 0 0 10px rgba(124, 77, 255, 0.5);
+}
+
+#search {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border 0.2s;
+}
+
+#search:focus {
+    border-color: #00e5ff;
+    outline: none;
+}
+
+/* --- CONTENIDO PRINCIPAL --- */
+.main {
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+.section h2 {
+    color: #00e5ff;
+    border-left: 4px solid #00e5ff;
+    padding-left: 10px;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+/* --- TARJETAS --- */
+.card {
+    background: linear-gradient(145deg, #151525, #0b0b14);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #222;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border: 1px solid #00e5ff;
+    box-shadow: 0 0 12px #00e5ff33;
+}
+
+.img-container {
+    width: 100%;
+    height: 130px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1a1a2e;
+    position: relative;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card h4 {
+    margin: 10px 0 5px 0;
+    font-size: 14px;
+    line-height: 1.3;
+    height: 36px;
+    overflow: hidden;
+}
+
+.price {
+    color: #00e5ff;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.card button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    background: #00e5ff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 6px;
+    color: black;
+}
+
+/* --- COLUMNA DERECHA: CARRITO Y CHAT IA --- */
+.right-panel {
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #06060c;
+}
+
+.panel-box {
+    background: #0c0c14;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.panel-box h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 5px;
+}
+
+/* Carrito */
+#cart-list {
+    max-height: 150px;
+    overflow-y: auto;
+    font-size: 13px;
+}
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #151525;
+}
+.total-box {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: right;
+    color: #00e5ff;
+}
+
+/* Chatbot IA */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 250px;
+}
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    font-size: 12px;
+    padding: 5px;
+    background: #07070d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border: 1px solid #151525;
+}
+.msg { margin-bottom: 8px; padding: 6px; border-radius: 6px; max-width: 85%; }
+.msg.user { background: #7c4dff22; color: #d1c4e9; margin-left: auto; text-align: right; }
+.msg.bot { background: #00e5ff11; color: #e0f7fa; border-left: 2px solid #00e5ff; }
+
+.chat-input-area {
+    display: flex;
+    gap: 5px;
+}
+.chat-input-area input {
+    flex-grow: 1;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+}
+.chat-input-area button {
+    background: #7c4dff;
+    color: white;
+    border: none;
+    padding: 0 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.small { font-size: 11px; color: #888; text-transform: uppercase; }
+
+/* --- RESPONSIVE DISTRIBUCIÓN PC --- */
+@media (min-width: 992px) {
+    body { flex-direction: row; }
+    .sidebar { width: 260px; height: 100vh; position: fixed; border-right: 2px solid #7c4dff; border-bottom: none; }
+    .sidebar .menu-btns { flex-direction: column; }
+    .sidebar button { flex: none; width: 100%; text-align: left; padding: 12px; font-size: 13px; }
+    .main { margin-left: 260px; margin-right: 320px; width: calc(100% - 580px); }
+    .right-panel { width: 320px; height: 100vh; position: fixed; right: 0; top: 0; border-left: 1px solid #222; }
+    .chat-container { height: 350px; }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>⚡ NEON NEXT GEN</h2>
+    <div class="menu-btns">
+        <button id="btn-pc" class="active" onclick="setCat('pc')">💻 PCs Armadas</button>
+        <button id="btn-gpu" onclick="setCat('gpu')">🎮 Tarjetas Gráficas</button>
+        <button id="btn-monitor" onclick="setCat('monitor')">🖥️ Monitores</button>
+        <button id="btn-perif" onclick="setCat('perif')">⌨️ Periféricos</button>
+    </div>
+    <input id="search" placeholder="¿Qué estás buscando?..." onkeyup="render()">
+</div>
+
+<div class="main" id="main"></div>
+
+<div class="right-panel">
+    <div class="panel-box">
+        <h3 style="color: #00e5ff;">🛒 Tu Carrito</h3>
+        <div id="cart-list"></div>
+        <div class="total-box" id="cart-total">Total: S/ 0</div>
+    </div>
+
+    <div class="panel-box chat-container">
+        <h3 style="color: #7c4dff;">🤖 Consultas NEON AI</h3>
+        <div class="chat-messages" id="chat-box">
+            <div class="msg bot">¡Hola! Soy tu asistente NEON AI. Pregúntame qué componente o PC te conviene según tu presupuesto o necesidades.</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ej: Recomiéndame una GPU de S/ 2000" onkeydown="if(event.key==='Enter') sendToAI()">
+            <button onclick="sendToAI()">⚡</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let cart = [];
+let cat = "pc";
+
+// BASE DE DATOS AMPLIADA Y CONTROLADA
+const products = [
+    {name:"PC Entry AMD Ryzen 5 5600G / 16GB", price:1850, type:"pc", img:"https://images.unsplash.com/photo-1587202372639-3b4d3c3d3a1a"},
+    {name:"PC Core i5 12400F + RTX 3060", price:2999, type:"pc", img:"https://images.unsplash.com/photo-1587202372255-4c3b1f7c8a1a"},
+    {name:"PC Gamer Ryzen 5 7600X + RX 7600 XT", price:3850, type:"pc", img:"https://images.unsplash.com/photo-1624705002806-5d72df19c3ad"},
+    {name:"PC Streamer Core i7 14700K + RTX 4070 SUPER", price:5900, type:"pc", img:"https://images.unsplash.com/photo-1542751371-adc38448a05e"},
+    {name:"PC Ryzen 7 7800X3D + RTX 4080 SUPER", price:8400, type:"pc", img:"https://images.unsplash.com/photo-1550745165-9bc0b252726f"},
+    {name:"PC Ultra Intel Core i9 14900KS + RTX 4090", price:14500, type:"pc", img:"https://images.unsplash.com/photo-1616440347437-b1c73416efc2"},
+    
+    {name:"NVIDIA RTX 3050 8GB GDDR6", price:1150, type:"gpu", img:"https://images.unsplash.com/photo-1591488320449-011701bb6704"},
+    {name:"AMD Radeon RX 6600 8GB", price:1290, type:"gpu", img:"https://images.unsplash.com/photo-1591488320449-011701bb6704"},
+    {name:"NVIDIA RTX 4060 Ti 8GB OC", price:2150, type:"gpu", img:"https://images.unsplash.com/photo-1593642634315-48f5414c3ad9"},
+    {name:"AMD Radeon RX 7700 XT 12GB", price:2600, type:"gpu", img:"https://images.unsplash.com/photo-1587202372775-e229f172b9d7"},
+    {name:"NVIDIA RTX 4070 Ti SUPER 16GB", price:4650, type:"gpu", img:"https://images.unsplash.com/photo-1593642634315-48f5414c3ad9"},
+    {name:"NVIDIA RTX 5090 TITAN 32GB", price:9999, type:"gpu", img:"https://images.unsplash.com/photo-1593642634315-48f5414c3ad9"},
+
+    {name:"Monitor MSI 24\" FHD 144Hz IPS", price:650, type:"monitor", img:"https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc"},
+    {name:"Monitor ASUS TUF 27\" QHD 165Hz", price:1250, type:"monitor", img:"https://images.unsplash.com/photo-1547082299-de196ea013d6"},
+    {name:"Monitor LG Gear 27\" OLED 240Hz", price:3400, type:"monitor", img:"https://images.unsplash.com/photo-1547082299-de196ea013d6"},
+    {name:"Monitor Samsung Odyssey Neo G9 49\"", price:5800, type:"monitor", img:"https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc"},
+
+    {name:"Mouse Logitech G203 Lightsync", price:99, type:"perif", img:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46"},
+    {name:"Teclado Mecánico Redragon Mitra", price:190, type:"perif", img:"https://images.unsplash.com/photo-1618384887929-16ec33fab9ef"},
+    {name:"Audífonos HyperX Cloud II Wireless", price:450, type:"perif", img:"https://images.unsplash.com/photo-1546435770-a3e426bf472b"},
+    {name:"Micrófono QuadCast S RGB Stand", price:620, type:"perif", img:"https://images.unsplash.com/photo-1590602847861-f357a9332bbc"}
+];
+
+function setCat(c){
+    cat = c;
+    document.querySelectorAll(".sidebar button").forEach(btn => btn.classList.remove("active"));
+    document.getElementById(`btn-${c}`).classList.add("active");
+    render();
+}
+
+function add(i){
+    cart.push(products[i]);
+    renderCart();
+}
+
+function renderCart(){
+    let list = document.getElementById("cart-list");
+    let totalEl = document.getElementById("cart-total");
+    list.innerHTML = "";
+    
+    if(cart.length === 0){
+        list.innerHTML = "<span style='color:#555'>El carrito está vacío.</span>";
+        totalEl.innerHTML = "Total: S/ 0";
+        return;
+    }
+    
+    let total = 0;
+    cart.forEach(item => {
+        total += item.price;
+        list.innerHTML += `<div class="cart-item"><span>• ${item.name}</span><span style="color:#00e5ff">S/ ${item.price}</span></div>`;
+    });
+    totalEl.innerHTML = `Total: S/ ${total}`;
+}
+
+function render(){
+    let main = document.getElementById("main");
+    let s = document.getElementById("search").value?.toLowerCase() || "";
+    let filtered = products.filter(p => p.type == cat && p.name.toLowerCase().includes(s));
+
+    main.innerHTML = `
+        <div class="section">
+            <h2>${cat.toUpperCase()} SIGMA NEXT GEN</h2>
+            <div class="grid">
+                ${filtered.length === 0 ? '<p style="color:#555">No hay coincidencias en esta categoría.</p>': filtered.map((p)=>`
+                    <div class="card">
+                        <div class="img-container">
+                            <img src="${p.img}" onerror="this.style.display='none'">
+                        </div>
+                        <div>
+                            <h4>${p.name}</h4>
+                            <div class="price">S/ ${p.price}</div>
+                            <div class="small">${p.type}</div>
+                        </div>
+                        <button onclick="add(${products.indexOf(p)})">Agregar</button>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
+// --- INTELEGENCIA ARTIFICIAL LOCAL CUSTOM (Análisis de Intención de Compra) ---
+function sendToAI(){
+    let inputEl = document.getElementById("chat-input");
+    let chatBox = document.getElementById("chat-box");
+    let query = inputEl.value.trim();
+    if(!query) return;
+
+    // Agregar mensaje del usuario en pantalla
+    chatBox.innerHTML += `<div class="msg user">${query}</div>`;
+    inputEl.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Simular procesamiento/pensamiento de la IA
+    setTimeout(() => {
+        let text = query.toLowerCase();
+        let response = "";
+        
+        // Extraer números/presupuesto potenciales si los hay
+        let budgetMatch = text.match(/\d+/);
+        let budget = budgetMatch ? parseInt(budgetMatch[0]) : null;
+
+        // Lógica de recomendación cruzada con la base de datos real
+        let matchedProducts = [];
+        
+        if (text.includes("gpu") || text.includes("tarjeta") || text.includes("video")) {
+            matchedProducts = products.filter(p => p.type === "gpu");
+        } else if (text.includes("pc") || text.includes("computadora") || text.includes("armada")) {
+            matchedProducts = products.filter(p => p.type === "pc");
+        } else if (text.includes("monitor") || text.includes("pantalla")) {
+            matchedProducts = products.filter(p => p.type === "monitor");
+        } else if (text.includes("periferico") || text.includes("mouse") || text.includes("teclado") || text.includes("audifono")) {
+            matchedProducts = products.filter(p => p.type === "perif");
+        }
+
+        // Si hay presupuesto, filtrar los que no excedan el monto
+        if (budget) {
+            let options = matchedProducts.filter(p => p.price <= budget);
+            if(options.length > 0) {
+                // Ordenar por el más cercano al presupuesto max
+                options.sort((a,b) => b.price - a.price);
+                response = `Para tu presupuesto de S/ ${budget}, te recomiendo la **${options[0].name}** por **S/ ${options[0].price}**. `;
+                if(options[1]) response += `O como alternativa: ${options[1].name} (S/ ${options[1].price}).`;
+            } else {
+                // Si todo excede, buscar lo más barato global en esa categoría
+                let cheaper = matchedProducts.sort((a,b) => a.price - b.price)[0];
+                if(cheaper) {
+                    response = `Tu presupuesto de S/ ${budget} es un poco ajustado para esa línea, nuestra opción más accesible es: **${cheaper.name}** a **S/ ${cheaper.price}**.`;
+                } else {
+                    response = `Contamos con periféricos accesibles desde S/ 99 o monitores desde S/ 650. ¿Te interesaría revisar alguno?`;
+                }
+            }
+        } else {
+            // Respuestas generales contextuales
+            if (matchedProducts.length > 0) {
+                response = `En la sección de ${matchedProducts[0].type.toUpperCase()} actualmente destacan el **${matchedProducts[0].name}** y el **${matchedProducts[1] ? matchedProducts[1].name : ''}**. ¿Tienes algún rango de precio en mente para ayudarte mejor?`;
+            } else if (text.includes("hola") || text.includes("buenas")) {
+                response = "¡Hola! Qué gusto saludarte. Dime, ¿estás armando una estación de trabajo, actualizando componentes o buscando periféricos gamer?";
+            } else if (text.includes("barato") || text.includes("economico")) {
+                let cheapest = [...products].sort((a,b)=>a.price-b.price)[0];
+                response = `El artículo más económico de todo el catálogo es el **${cheapest.name}** a tan solo **S/ ${cheapest.price}**.`;
+            } else {
+                response = "Entendido. No olvides que puedes pulsar los botones de categoría a la izquierda para ver todas nuestras piezas en stock y agregarlas directamente al carrito.";
+            }
+        }
+
+        chatBox.innerHTML += `<div class="msg bot">${response}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 650);
+}
+
+// Inicialización de la SPA
+render();
+renderCart();
+</script>
+
+</body>
+</html>
